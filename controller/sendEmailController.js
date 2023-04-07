@@ -28,9 +28,9 @@ module.exports = class SendEmailControler {
       if (file.sender) {
         return this.response.status(422).send({ error: 'Email already sent.' });
       }
-      //   file.sender = emailFrom;
-      //   file.receiver = emailTo;
-      //await file.save();
+      file.sender = emailFrom;
+      file.receiver = emailTo;
+      await file.save();
 
       //send Email
       await sendEmail({
