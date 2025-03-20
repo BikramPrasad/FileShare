@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SkyDrop - Seamless File Sharing</title>
+    <title>SwiftDrop - Seamless File Sharing</title>
     <style>
       body {
         margin: 0;
@@ -119,14 +119,18 @@
 
       #cancelFileBtn {
         display: none;
-        margin-top: 5px;
+        padding: 14px 20px; /* Same as upload button */
         background: #f56565;
         border: none;
-        padding: 6px 12px;
         color: white;
-        font-size: 12px;
-        border-radius: 8px;
+        font-size: 16px;
+        border-radius: 12px;
         cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      #cancelFileBtn:hover {
+        background: #ff3b3b; /* Brighter red on hover */
       }
 
       .actions {
@@ -260,18 +264,21 @@
     <div class="upload-section">
       <div class="upload-box">
         <h1>🚀 Transfer With Ease!</h1>
-        <form
-          id="uploadForm"
-          action="/api/files/upload"
-          method="POST"
-          enctype="multipart/form-data"
-        >
-          <div class="form-group">
-            <label for="file">Select a file</label>
-            <input type="file" name="myfile" id="file" required />
-            <div id="fileInfo"></div>
-            <button id="cancelFileBtn" type="button">Cancel</button>
-          </div>
+
+        <!-- Upload File First -->
+        <div class="form-group">
+          <label for="file">Select a file</label>
+          <input type="file" name="file" id="file" required />
+          <div id="fileInfo"></div>
+          <button id="cancelFileBtn" type="button">Cancel</button>
+          <button id="uploadBtn" type="button">⬆ Upload File</button>
+        </div>
+
+        <!-- Hidden input to store uploaded file URL -->
+        <input type="hidden" id="uploadedFileUrl" name="uploadedFileUrl" />
+
+        <!-- Email Form (disabled initially until upload is successful) -->
+        <form id="emailForm" style="display: none">
           <div class="form-group">
             <label for="title">Title (max 20 chars)</label>
             <input
@@ -299,6 +306,7 @@
               name="emailFrom"
               id="emailFrom"
               placeholder="you@example.com"
+              required
             />
           </div>
           <div class="form-group">
@@ -308,10 +316,11 @@
               name="emailTo"
               id="emailTo"
               placeholder="recipient1@example.com, recipient2@example.com"
+              required
             />
           </div>
           <div class="actions">
-            <button type="submit">✨ Send It</button>
+            <button type="submit">✨ Send Email</button>
             <div class="dropdown">
               <button class="dropbtn">⋮</button>
               <div class="dropdown-content">
@@ -336,8 +345,114 @@
       </div>
     </div>
 
-    <!-- Script -->
+    <!-- Scripts -->
     <script>
+      const fileInput = document.getElementById('file');
+      const fileInfo = document.getElementById('fileInfo');
+      const cancelBtn = document.getElementById('cancelFileBtn');
+      const uploadBtn = document.getElementById('uploadBtn');
+      const emailForm = document.getElementById('emailForm');
+      const uploadStatus = document.getElementById('uploadStatus');
+      const uploadedFileUrlInput = document.getElementById('uploadedFileUrl');
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+          fileInfo.textContent = `Selected: ${fileInput.files[0].name}`;
+          cancelBtn.style.display = 'inline-block';
+          uploadBtn.style.display = 'inline-block';
+        } else {
+          fileInfo.textContent = '';
+          cancelBtn.style.display = 'none';
+          uploadBtn.style.display = 'none';
+        }
+      });
+
+      cancelBtn.addEventListener('click', () => {
+        fileInput.value = '';
+        fileInfo.textContent = '';
+        cancelBtn.style.display = 'none';
+        uploadBtn.style.display = 'none';
+        emailForm.style.display = 'none';
+        uploadedFileUrlInput.value = '';
+        uploadStatus.innerText = '';
+      });
+
+      uploadBtn.addEventListener('click', async () => {
+        const file = fileInput.files[0];
+        if (!file) return alert('Please select a file first!');
+
+        uploadStatus.innerText = '⏳ Uploading...';
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const response = await fetch('/api/files/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.fileUrl) {
+            uploadStatus.innerText = '✅ File uploaded successfully!';
+            uploadedFileUrlInput.value = result.fileUrl;
+            emailForm.style.display = 'block';
+          } else {
+            uploadStatus.innerText = `❌ ${
+              result.error || 'Upload failed. Try again.'
+            }`;
+          }
+        } catch (err) {
+          uploadStatus.innerText = '❌ Upload error. Please try again.';
+          console.error(err);
+        }
+      });
+
+      emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          title: document.getElementById('title').value,
+          message: document.getElementById('message').value,
+          emailFrom: document.getElementById('emailFrom').value,
+          emailTo: document.getElementById('emailTo').value,
+          fileUrl: uploadedFileUrlInput.value,
+        };
+
+        try {
+          uploadStatus.innerText = '📧 Sending email...';
+          const res = await fetch('/api/files/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const result = await res.json();
+          if (result.success) {
+            uploadStatus.innerText = '✅ Email sent successfully!';
+            emailForm.reset();
+            fileInput.value = '';
+            uploadedFileUrlInput.value = '';
+            emailForm.style.display = 'none';
+          } else {
+            uploadStatus.innerText = '❌ Failed to send email.';
+          }
+        } catch (err) {
+          uploadStatus.innerText = '❌ Error sending email.';
+          console.error(err);
+        }
+      });
+
+      function handleShortLink() {
+        const link = uploadedFileUrlInput.value;
+        if (!link) {
+          alert('Upload file first to generate a short link.');
+        } else {
+          alert('Short link feature will be added soon!\nLink: ' + link);
+        }
+      }
+
+      // Rotating Quotes Logic (unchanged)
       const quotes = [
         'Creativity is intelligence having fun. – Albert Einstein',
         'Simplicity is the soul of efficiency. – Austin Freeman',
@@ -347,7 +462,6 @@
         'Push yourself, because no one else is going to do it for you.',
         'Dream it. Wish it. Do it.',
       ];
-
       const quoteImages = [
         'https://i.postimg.cc/kXfNzPGX/q1.jpg',
         'https://i.postimg.cc/jqGCj81Q/q2.jpg',
@@ -355,7 +469,6 @@
         'https://i.postimg.cc/ZKT26mXT/q4.jpg',
         'https://i.postimg.cc/d3Q6Zs3p/q5.jpg',
       ];
-
       let lastQuoteIndex = 0;
       let lastImageIndex = 0;
 
@@ -391,31 +504,6 @@
       }
 
       setInterval(rotateQuotes, 5000);
-
-      document.getElementById('file').addEventListener('change', function () {
-        const fileInfo = document.getElementById('fileInfo');
-        const cancelBtn = document.getElementById('cancelFileBtn');
-        if (this.files.length > 0) {
-          fileInfo.textContent = `Selected: ${this.files[0].name}`;
-          cancelBtn.style.display = 'inline-block';
-        } else {
-          fileInfo.textContent = '';
-          cancelBtn.style.display = 'none';
-        }
-      });
-
-      document
-        .getElementById('cancelFileBtn')
-        .addEventListener('click', function () {
-          const fileInput = document.getElementById('file');
-          fileInput.value = '';
-          document.getElementById('fileInfo').textContent = '';
-          this.style.display = 'none';
-        });
-
-      function handleShortLink() {
-        alert('Short link feature will be activated after successful upload!');
-      }
     </script>
   </body>
 </html>
