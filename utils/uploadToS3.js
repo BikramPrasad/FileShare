@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const fs = require('fs');
-const path = require('path');
 const mime = require('mime-types');
 
 // Initialize S3 Client
@@ -12,7 +11,6 @@ const s3 = new S3Client({
     secretAccessKey: process.env.AWS_SECRET,
   },
 });
-
 
 const uploadToS3 = async (localFilePath, originalFileName) => {
   const fileStream = fs.createReadStream(localFilePath);

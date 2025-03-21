@@ -1,4 +1,3 @@
-<!-- Save as index.html or similar -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -275,24 +274,27 @@
           <button id="uploadBtn" type="button">⬆ Upload File</button>
         </div>
 
+        <!-- Hidden input to store uploaded file URL -->
         <input type="hidden" id="uploadedFileUrl" name="uploadedFileUrl" />
-        <div id="sendEmailStatus" style="margin-top: 12px; color: #444"></div>
 
-        <!-- Email Form -->
+        <div id="sendEmailStatus" style="margin-top: 12px; color: #444;"></div>
+        <!-- Email Form (disabled initially until upload is successful) -->
         <form id="emailForm" style="display: none">
           <div class="form-group">
             <label for="title">Title (max 20 chars)</label>
             <input
               type="text"
+              name="title"
               id="title"
               maxlength="20"
-              required
               placeholder="File title..."
+              required
             />
           </div>
           <div class="form-group">
             <label for="message">Message (max 100 chars)</label>
             <textarea
+              name="message"
               id="message"
               maxlength="100"
               placeholder="Optional message..."
@@ -302,6 +304,7 @@
             <label for="emailFrom">Your Email</label>
             <input
               type="email"
+              name="emailFrom"
               id="emailFrom"
               placeholder="you@example.com"
               required
@@ -311,14 +314,21 @@
             <label for="emailTo">Send To (max 3 emails)</label>
             <input
               type="email"
+              name="emailTo"
               id="emailTo"
               placeholder="recipient1@example.com, recipient2@example.com"
-              required
               multiple
+              required
             />
           </div>
           <div class="actions">
             <button type="submit">✨ Send Email</button>
+            <!-- <div class="dropdown">
+              <button class="dropbtn">⋮</button>
+              <div class="dropdown-content">
+                <a href="#" onclick="handleShortLink()">Create Short Link</a>
+              </div>
+            </div> -->
           </div>
         </form>
         <div id="uploadStatus"></div>
@@ -337,7 +347,7 @@
       </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Scripts -->
     <script>
       const fileInput = document.getElementById('file');
       const fileInfo = document.getElementById('fileInfo');
@@ -372,8 +382,8 @@
       uploadBtn.addEventListener('click', async () => {
         const file = fileInput.files[0];
         if (!file) return alert('Please select a file first!');
-        uploadStatus.innerText = '⏳ Uploading...';
 
+        uploadStatus.innerText = '⏳ Uploading...';
         const formData = new FormData();
         formData.append('file', file);
 
@@ -382,6 +392,7 @@
             method: 'POST',
             body: formData,
           });
+
           const result = await response.json();
 
           if (response.ok && result.fileId) {
@@ -409,8 +420,8 @@
           emailTo: document.getElementById('emailTo').value,
           fileId: uploadedFileId.value,
         };
-
         const sendEmailStatus = document.getElementById('sendEmailStatus');
+
         try {
           sendEmailStatus.innerText = '📧 Sending email...';
           const response = await fetch('/api/files/send', {
@@ -419,17 +430,13 @@
             body: JSON.stringify(payload),
           });
 
-          const result = await response.json(); // ✅ Fixed this line
-
+          const result = await response.json()
           if (response.ok && result.message) {
             sendEmailStatus.innerText = '✅ Email sent successfully!';
             emailForm.reset();
             fileInput.value = '';
             uploadedFileId.value = '';
             emailForm.style.display = 'none';
-            uploadStatus.innerText = '';
-
-            cancelBtn.style.display = 'none';
           } else {
             sendEmailStatus.innerText = `❌ Failed to send email: ${
               result.error || 'Unknown error.'
@@ -441,7 +448,16 @@
         }
       });
 
-      // Quote Rotation
+      // function handleShortLink() {
+      //   const link = uploadedFileId.value;
+      //   if (!link) {
+      //     alert('Upload file first to generate a short link.');
+      //   } else {
+      //     alert('Short link feature will be added soon!\nLink: ' + link);
+      //   }
+      // }
+
+      // Rotating Quotes Logic (unchanged)
       const quotes = [
         'Creativity is intelligence having fun. – Albert Einstein',
         'Simplicity is the soul of efficiency. – Austin Freeman',

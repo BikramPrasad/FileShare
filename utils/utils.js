@@ -10,10 +10,15 @@ const fileTypeValidator = (files, allowedMimeTypes = MimeType.AllowedTypes) => {
   return files.some((file) => !allowedMimeTypes.includes(file.mimetype));
 };
 
-const validateEmail = (email) => {
+const validateEmail = (input) => {
   const re =
     /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-  return re.test(email);
+
+  if (Array.isArray(input)) {
+    return input.every((email) => re.test(email));
+  }
+
+  return re.test(input);
 };
 
 module.exports = {
