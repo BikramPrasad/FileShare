@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found | Weather App</title>
+    <link
+      rel="icon"
+      href="https://i.postimg.cc/LsTDkxgk/error-404.png"
+      type="image/png"
+      sizes="512x512"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://i.postimg.cc/LsTDkxgk/error-404.png"
+    />
+
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #87ceeb, #1e90ff);
+        color: #333;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .error-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        max-width: 90%;
+        width: 500px;
+      }
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        color: #e74c3c;
+      }
+      .error-code {
+        font-size: 1.5rem;
+        color: #7f8c8d;
+        margin-bottom: 1.5rem;
+      }
+      p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+      .home-button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s;
+      }
+      .home-button:hover {
+        background-color: #2980b9;
+      }
+      .weather-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <div class="weather-icon">⛈️</div>
+      <h1>Oops!</h1>
+      <div class="error-code">404 - Page Not Found</div>
+      <p>The page you are looking does not exist.</p>
+      <a href="/" class="home-button">Back to Home</a>
+    </div>
+  </body>
+</html>

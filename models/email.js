@@ -11,8 +11,8 @@ const emailSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     message: { type: String, required: true },
-    to: { type: String, required: true },
-    from: { type: [String], required: true },
+    to: { type: [String], required: true },
+    from: { type: String, required: true },
     fileId: {
       type: String,
       required: true,

@@ -1,29 +1,36 @@
-require("dotenv").config();
+require('dotenv').config();
 const winston = require('winston');
 const WinstonContext = require('winston-context');
 
-const isProductionEnvironment = () => process.env.NODE_CONFIG_ENV === 'prod';
-const logLevel = isProductionEnvironment() ? 'info' : 'silly';
+const logLevel = process.env.LOG_LEVEL || 'debug';
 
+function createBaseLogger(env) {
+  const logPrefix = process.env.LOG_PREFIX || 'AppLog';
 
-function createLogger(env) {
-  const logPrefix = process.env.LOG_PREFIX;
-  const logger = winston.createLogger({
+  return winston.createLogger({
     level: logLevel,
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.label({ label: `${logPrefix}::${env}` }),
-      isProductionEnvironment() ? winston.format.json() : winston.format.printf(info => JSON.stringify(info)),
+      winston.format.metadata({
+        fillExcept: ['message', 'level', 'timestamp', 'label'],
+      }),
+      winston.format.json()
     ),
-    transports: [
-      new winston.transports.Console(),
-    ],
+    transports: [new winston.transports.Console()],
   });
-  return logger;
 }
-const logger = createLogger(process.env.NODE_ENV);
-const contextLogger = new WinstonContext(logger, '', {
-  requestId: (Math.random() * 1e20).toString(36),
-});
 
-module.exports = contextLogger;
+const baseLogger = createBaseLogger(process.env.NODE_ENV);
+
+function createContextLogger(req) {
+  const requestId = (Math.random() * 1e20).toString(36);
+  const context = {
+    requestId,
+    ip: req.ip || req.connection?.remoteAddress,
+  };
+
+  return new WinstonContext(baseLogger, '', context);
+}
+
+module.exports = { createContextLogger, logger: baseLogger };

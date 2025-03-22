@@ -13,10 +13,10 @@ module.exports = class UploadFileController {
     this.request = request;
     this.response = response;
     this.fileRepo = new FileRepo();
+    this.logger = request.logger; // 👈 use req.logger from middleware
   }
 
-  validate() {
-    const file = this.request.file;
+  validate(file) {
     if (!file) {
       throw new HttpError(StatusCodes.BAD_REQUEST, 'Please upload a file.');
     }
@@ -31,16 +31,21 @@ module.exports = class UploadFileController {
   }
 
   async handleRequest() {
+    const file = this.request.file;
+    const localPath = file?.path;
+
     try {
-      this.validate();
-
-      const file = this.request.file;
+      this.validate(file);
       const uuid = uuidv4();
-      const localPath = file.path;
 
+      this.logger.info('🆙 File validated', {
+        filename: file.filename,
+        size: file.size,
+      });
+
+      // Upload to S3
       const s3Url = await uploadToS3(localPath, file.filename);
 
-      await fs.unlink(localPath);
       if (!s3Url) {
         throw new HttpError(
           StatusCodes.INTERNAL_SERVER_ERROR,
@@ -48,6 +53,12 @@ module.exports = class UploadFileController {
         );
       }
 
+      this.logger.info('✅ File uploaded to S3', {
+        s3Url,
+        filename: file.filename,
+      });
+
+      // Save file details to DB
       const payload = {
         filename: file.filename,
         uuid,
@@ -57,12 +68,26 @@ module.exports = class UploadFileController {
 
       await this.fileRepo.create(payload);
 
+      await fs.unlink(localPath).catch(() => {});
+
+      this.logger.info('💾 File saved in DB & local file cleaned up', {
+        fileId: uuid,
+      });
+
       return this.response.status(StatusCodes.OK).json({
         status: true,
-        fileId: uuid
+        fileId: uuid,
       });
     } catch (err) {
-      console.error(err);
+      if (localPath) {
+        await fs.unlink(localPath).catch(() => {});
+      }
+
+      this.logger.error('❌ UploadFileController error', {
+        message: err.message,
+        stack: err.stack,
+      });
+
       return this.response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: false,
         error: err.message || 'Something went wrong.',
