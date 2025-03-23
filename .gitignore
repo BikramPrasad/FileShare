@@ -26,3 +26,7 @@ coverage/
 
 # EJS view cache (if any)
 views/*.ejs~
+
+# Temp folder - ignore all contents except .gitkeep
+!temp/.gitkeep
+temp/*

@@ -1,13 +1,14 @@
 {
   "name": "filesharing",
   "version": "1.0.0",
-  "description": "SwiftDrop - File Sharing App",
+  "description": "SwiftDrop - Transfer with ease",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "server": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo 'No build step required'"
+    "build": "echo 'No build step required'",
+    "postinstall": "node create-folder.js"  
   },
   "engines": {
     "node": "18.x"

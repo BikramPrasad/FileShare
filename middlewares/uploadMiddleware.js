@@ -4,7 +4,7 @@ const HttpError = require('standard-http-error');
 const { StatusCodes } = require('http-status-codes');
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'tmp/'),
+  destination: (req, file, cb) => cb(null, 'temp/'),
   filename: (req, file, cb) => {
     const uniqueName = `${Date.now()}-${Math.round(
       Math.random() * 1e9
