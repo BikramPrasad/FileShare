@@ -61,7 +61,7 @@ module.exports = class UploadFileController {
       // Save file details to DB
       const payload = {
         filename: file.filename,
-        uuid,
+        fileId:uuid,
         fileUrl: s3Url,
         size: file.size,
       };

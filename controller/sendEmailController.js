@@ -76,10 +76,11 @@ module.exports = class SendEmailController {
       const emailPayload = {
         from: emailFrom,
         to: this.emailToList,
-        subject: title,
-        text: message,
+        subject: message,
+        title: title,
+        fileId: fileId,
       };
-
+      console.log("THe email Payload is ", emailPayload)
       const sendEmail = await sendEmailViaSNS(emailPayload);
 
       if (!sendEmail) {

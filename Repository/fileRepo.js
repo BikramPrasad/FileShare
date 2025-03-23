@@ -7,7 +7,7 @@ class FileRepo {
   }
 
   async findById(id) {
-    const result = await FileModel.findOne({ uuid: id });
+    const result = await FileModel.findOne({ fileId: id });
     return result;
   }
 
