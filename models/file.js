@@ -6,7 +6,7 @@ const fileSchema = new mongoose.Schema(
     filename: { type: String, required: true },
     fileUrl: { type: String, required: true },
     size: { type: Number, required: true },
-    uuid: { type: String, required: true , unique: true},
+    fileId: { type: String, required: true , unique: true},
   },
   { _id: false, timestamps: true }
 );

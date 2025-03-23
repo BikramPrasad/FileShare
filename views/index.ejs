@@ -4,7 +4,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SwiftDrop - Seamless File Sharing</title>
+    <title>SwiftDrop|Transfer with ease</title>
+    <link
+      rel="icon"
+      href="https://img.icons8.com/ios/50/share--v1.png"
+      type="image/png"
+    />
+
     <style>
       body {
         margin: 0;
@@ -139,7 +145,12 @@
         justify-content: space-between;
         align-items: center;
       }
-
+      .made-by {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #4a5568;
+      }
       button {
         padding: 12px 20px;
         background: #6b9dfc;
@@ -251,13 +262,9 @@
       }
     </style>
   </head>
-  <body>
     <!-- Brand Logo -->
     <div class="brand-logo">
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/860/860814.png"
-        alt="logo"
-      />
+      <img src="https://img.icons8.com/ios/50/share--v1.png" alt="logo" />
       <span>SwiftDrop</span>
     </div>
 
@@ -323,6 +330,7 @@
         </form>
         <div id="uploadStatus"></div>
       </div>
+      <footer class="made-by">Made with ❤️ by <strong>Bikram</strong></footer>
     </div>
 
     <!-- Quote Section -->
@@ -405,7 +413,7 @@
         const payload = {
           title: document.getElementById('title').value,
           message: document.getElementById('message').value,
-          emailFrom: [document.getElementById('emailFrom').value],
+          emailFrom: document.getElementById('emailFrom').value,
           emailTo: document.getElementById('emailTo').value,
           fileId: uploadedFileId.value,
         };
