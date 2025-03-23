@@ -1,4 +1,4 @@
-# 🚀 SwiftDrop - File Sharing Made Simple
+# 🚀 SwiftDrop - Transfer with ease
 
 **SwiftDrop** is a modern, secure, and user-friendly file-sharing application that allows users to upload and share files effortlessly. It features a stylish frontend, smooth animations, S3 file storage, email notifications, and quote-rotating inspiration—designed for simplicity, speed, and scalability.
 
