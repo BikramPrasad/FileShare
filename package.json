@@ -1,14 +1,16 @@
 {
-  "name": "filesharing",
+  "name": "swiftdrop-filesharing",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "SwiftDrop - Secure File Sharing Platform",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "server": "node server.js"
+    "server": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'No build step needed'"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["file-sharing", "swift", "s3", "express", "ejs", "aws"],
+  "author": "Bikram",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
@@ -34,5 +36,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
