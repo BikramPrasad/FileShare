@@ -396,13 +396,16 @@
             uploadStatus.innerText = '✅ File uploaded successfully!';
             uploadedFileId.value = result.fileId;
             emailForm.style.display = 'block';
+            uploadBtn.style.display = 'none';
           } else {
             uploadStatus.innerText = `❌ ${
               result.error || 'Upload failed. Try again.'
             }`;
+            uploadBtn.style.display = 'none';
           }
         } catch (err) {
           uploadStatus.innerText = '❌ Upload error. Please try again.';
+          uploadBtn.style.display = 'none';
           console.error(err);
         }
       });

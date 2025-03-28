@@ -15,6 +15,7 @@ const app = express();
 // View engine setup
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'ejs');
+app.set('trust-proxy', true);
 
 // Middlewares
 app.use(
@@ -29,16 +30,6 @@ app.use(helmet());
 app.use(compression());
 app.use(express.json());
 
-app.use((err, req, res, next) => {
-  if (req.logger) {
-    req.logger.error('Unhandled server error', { error: err.stack });
-  } else {
-    logger.error('Unhandled server error (no req context)', {
-      error: err.stack,
-    });
-  }
-  res.status(500).json({ error: 'Something went wrong!' });
-});
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -66,8 +57,10 @@ app.use((req, res) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const errorMessage = err.message || 'Something went wrong!';
   logger.error(`❌ Server error: ${err.stack}`);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(statusCode).json({ error: errorMessage });
 });
 
 // Start Server
@@ -76,9 +69,8 @@ const startServer = async () => {
   try {
     await MongoService.getInstance().init();
     const PORT = process.env.PORT || 3000;
-    server = http.createServer(app);
-    server.listen(PORT, () => {
-      logger.info(`🚀 Server is running at http://localhost:${PORT}`);
+    server = app.listen(PORT, () => {
+      logger.info(`🚀 Listenting on port ${PORT}`);
     });
 
     const shutdown = async () => {
