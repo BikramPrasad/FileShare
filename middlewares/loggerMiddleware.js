@@ -10,7 +10,11 @@ module.exports = (req, res, next) => {
   req.requestId = requestId;
   req.logger = logger.child({
     requestId,
-    ip: req.ip || req.connection?.remoteAddress,
+    ip:
+      req.ip ||
+      req.connection?.remoteAddress ||
+      req.headers['x-forwarder-for'] ||
+      req.host,
   });
 
   req.logger.info('Incoming request', {
@@ -19,13 +23,13 @@ module.exports = (req, res, next) => {
   });
 
   res.on('finish', () => {
-    const durationMs = Date.now() - startTime;
+    const duration = Date.now() - startTime;
 
     req.logger.info('Completed request', {
       method: req.method,
       url: req.originalUrl,
       statusCode: res.statusCode,
-      durationMs,
+      duration: `${duration} ms`,
     });
   });
 
